@@ -1,5 +1,9 @@
 package uk.ac.ed.inf;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONString;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ThreadSafeSingleton {
@@ -46,11 +51,33 @@ public class ThreadSafeSingleton {
             }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String output;
-            System.out.println("Output from Server .... \n");
-            while ((output = br.readLine()) != null) {
-                System.out.println(output);
+
+//            System.out.println("Output from Server .... \n");
+//            while ((output = br.readLine()) != null) {
+//                System.out.println(output);
+//            }
+//            String reader = br.readLine();
+//            String newStr = reader.replace("[", "");
+//            String finalReader = newStr.replace("]", "");
+//            List<JSONObject> centralCoordinates = new ArrayList<JSONObject>(Arrays.asList(finalReader.split(",")));
+            JSONArray reader = new JSONArray(br.readLine());
+            for (int i = 0; i < reader.length(); i++) {
+                JSONObject coor = reader.getJSONObject(i);
+                System.out.println(coor.get("latitude"));
             }
+
+//            for (Object jo : reader) {
+//                System.out.println(jo);
+//                JSONObject jsonObject = new JSONObject(jo);
+//                System.out.println(jsonObject);
+////                System.out.println(jsonObject.get("latitude"));
+//            }
+
+
+
+//            JSONObject central = new JSONObject(br.readLine());
+//            System.out.println(central);
+
 
             conn.disconnect();
 

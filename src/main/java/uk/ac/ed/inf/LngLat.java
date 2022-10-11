@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record LngLat(double lng, double lat) {
+
+
     public boolean inCentralArea() {
         ThreadSafeSingleton threadSafeSingleton = new ThreadSafeSingleton();
         String[] args = {"https://ilp-rest.azurewebsites.net/", "centralArea"};
@@ -22,13 +24,7 @@ public record LngLat(double lng, double lat) {
             }
             line2.clear();
         }
-//        line2.add(centralCoor.get(centralCoor.size()-1));
-//        line2.add(centralCoor.get(0));
-//        if (this.intersect(line1, line2)) {
-//            System.out.println("+1");
-//            lineIntersect ++;
-//        }
-        System.out.println("Line intersect" + lineIntersect);
+//        System.out.println("Line intersect" + lineIntersect);
         return lineIntersect % 2 != 0;
     }
 
@@ -56,31 +52,73 @@ public record LngLat(double lng, double lat) {
         return (this.distanceTo(l2) < 0.00015);
     }
 
-    public LngLat nextPosition(int compassDirection) {
-        int angle;
+    public LngLat nextPosition(CompassDirection compassDirection) {
         double newLng;
         double newLat;
-        if (compassDirection < 90) {
-            angle = 90 - compassDirection;
-            newLng = this.lng + Math.acos(angle)*0.00015;
-            newLat = this.lat + Math.asin(angle)*0.00015;
-        } else if (compassDirection < 180) {
-            angle = compassDirection - 90;
-            newLng = this.lng + Math.acos(angle)*0.00015;
-            newLat = this.lat - Math.asin(angle)*0.00015;
-        } else if (compassDirection < 270) {
-            angle = 270 - compassDirection;
-            newLng = this.lng - Math.acos(angle)*0.00015;
-            newLat = this.lat - Math.asin(angle)*0.00015;
+        int index = compassDirection.ordinal(); // gets the index of the selected enum from all the enums i.e. CompassDirection.North.ordinal() = 0;
+        double angle = index*Math.PI/6;
+
+//        North,
+//                NorthNorthEast,
+//                NorthEast,
+//                EastNorthEast,
+//                East,
+//                EastSouthEast,
+//                SouthEast,
+//                SouthSouthEast,
+//                South,
+//                SouthSouthWest,
+//                SouthWest,
+//                WestSouthWest,
+//                West,
+//                WestNorthWest,
+//                NorthWest,
+//                NorthNorthWest
+//        if (compassDirection == CompassDirection.North){
+//
+//        }else if (compassDirection == CompassDirection.NorthNorthEast) {
+//
+//        }else if (compassDirection == CompassDirection.NorthEast) {
+//
+//        }else if (compassDirection == CompassDirection.EastNorthEast) {
+//
+//        }else if (compassDirection == CompassDirection.East) {
+//
+//        }else if (compassDirection == CompassDirection.EastSouthEast) {
+//
+//        }else if (compassDirection == CompassDirection.SouthEast) {
+//
+//        }else if (compassDirection == CompassDirection.SouthSouthEast) {
+//
+//        }else if (compassDirection == CompassDirection.South) {
+//
+//        }else if (compassDirection == CompassDirection.SouthSouthWest) {
+//
+//        }else if (compassDirection == CompassDirection.SouthWest) {
+//
+//        }else if (compassDirection == CompassDirection.WestSouthWest) {
+//
+//        }else if (compassDirection == CompassDirection.West) {
+//
+//        }
+        if (angle <= Math.PI/2) {
+            double angleForCalc = Math.PI/2 - angle;
+            newLng = this.lng + Math.cos(angleForCalc)*0.00015;
+            newLat = this.lat + Math.sin(angleForCalc)*0.00015;
+        } else if (angle <= Math.PI) {
+            double angleForCalc = Math.PI - angle;
+            newLng = this.lng + Math.sin(angleForCalc)*0.00015;
+            newLat = this.lat - Math.cos(angleForCalc)*0.00015;
+        } else if (angle <= Math.PI*1.5) {
+            double angleForCalc = Math.PI*1.5 - angle;
+            newLng = this.lng - Math.cos(angleForCalc)*0.00015;
+            newLat = this.lat - Math.sin(angleForCalc)*0.00015;
         } else {
-            angle = compassDirection - 270;
-            newLng = this.lng - Math.acos(angle)*0.00015;
-            newLat = this.lat + Math.asin(angle)*0.00015;
+            double angleForCalc = Math.PI*2 - angle;
+            newLng = this.lng - Math.sin(angleForCalc)*0.00015;
+            newLat = this.lat + Math.cos(angleForCalc)*0.00015;
         }
-
         return new LngLat(newLng, newLat);
-
-
 
     }
 }

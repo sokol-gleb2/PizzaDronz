@@ -4,22 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONString;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ThreadSafeSingleton {
@@ -85,16 +77,6 @@ public class ThreadSafeSingleton {
                 centralCoor.add(centralPoint);
 
             }
-
-//            JSONArray reader = new JSONArray(br.readLine());
-//            for (int i = 0; i < reader.length(); i++) {
-//                JSONObject coor = reader.getJSONObject(i);
-//                LngLat centralPoint = new LngLat(Double.parseDouble(coor.get("longitude").toString()), Double.parseDouble(coor.get("latitude").toString()));
-//                centralCoor.add(centralPoint);
-//            }
-
-
-
 
             conn.disconnect();
 

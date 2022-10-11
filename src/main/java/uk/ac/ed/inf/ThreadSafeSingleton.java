@@ -1,5 +1,10 @@
 package uk.ac.ed.inf;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -7,8 +12,11 @@ import org.json.JSONString;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,12 +34,30 @@ public class ThreadSafeSingleton {
         return instance;
     }
 
-    public List<Double> coordinates(String[] args) {
-        List<Double> centralCoor = new ArrayList<>();
-        centralCoor.add(2.33);
-        centralCoor.add(2.33);
-        centralCoor.add(2.33);
-        centralCoor.add(2.33);
+    public static Restaurant[] getResAndMenu(URL url) {
+        try {
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+
+            if (conn.getResponseCode() != 200) {
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + conn.getResponseCode());
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String jsonS = br.readLine();
+            return new Gson().fromJson(jsonS, Restaurant[].class);
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<LngLat> coordinates(String[] args) {
+        List<LngLat> centralCoor = new ArrayList<>();
+
 
         try {
             String baseURL = args[0];
@@ -52,31 +78,22 @@ public class ThreadSafeSingleton {
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-//            System.out.println("Output from Server .... \n");
-//            while ((output = br.readLine()) != null) {
-//                System.out.println(output);
-//            }
-//            String reader = br.readLine();
-//            String newStr = reader.replace("[", "");
-//            String finalReader = newStr.replace("]", "");
-//            List<JSONObject> centralCoordinates = new ArrayList<JSONObject>(Arrays.asList(finalReader.split(",")));
-            JSONArray reader = new JSONArray(br.readLine());
-            for (int i = 0; i < reader.length(); i++) {
-                JSONObject coor = reader.getJSONObject(i);
-                System.out.println(coor.get("latitude"));
+            JsonArray readerG = new JsonParser().parse(br.readLine()).getAsJsonArray();
+            for (int i = 0; i < readerG.size(); i++) {
+                JsonObject coor = (JsonObject) readerG.get(i);
+                LngLat centralPoint = new LngLat(coor.get("longitude").getAsDouble(), coor.get("latitude").getAsDouble());
+                centralCoor.add(centralPoint);
+
             }
 
-//            for (Object jo : reader) {
-//                System.out.println(jo);
-//                JSONObject jsonObject = new JSONObject(jo);
-//                System.out.println(jsonObject);
-////                System.out.println(jsonObject.get("latitude"));
+//            JSONArray reader = new JSONArray(br.readLine());
+//            for (int i = 0; i < reader.length(); i++) {
+//                JSONObject coor = reader.getJSONObject(i);
+//                LngLat centralPoint = new LngLat(Double.parseDouble(coor.get("longitude").toString()), Double.parseDouble(coor.get("latitude").toString()));
+//                centralCoor.add(centralPoint);
 //            }
 
 
-
-//            JSONObject central = new JSONObject(br.readLine());
-//            System.out.println(central);
 
 
             conn.disconnect();

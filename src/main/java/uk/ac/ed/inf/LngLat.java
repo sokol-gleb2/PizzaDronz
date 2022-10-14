@@ -124,6 +124,10 @@ public record LngLat(double lng, double lat) {
         return false;
     }
 
+
+
+
+
     /**
      *
      * Calculates Pythagorean distance between current point and a point given as parameter.
@@ -137,9 +141,11 @@ public record LngLat(double lng, double lat) {
     }
 
     public boolean closeTo(LngLat l2) {
-        // NOTE: Think about double and all that nonesense i.e. is this accurate??
         return (this.distanceTo(l2) < 0.00015);
     }
+
+
+
 
     /**
      *
@@ -157,8 +163,13 @@ public record LngLat(double lng, double lat) {
         double newLng;
         double newLat;
         int index = compassDirection.ordinal(); // gets the index of the selected enum from all the enums i.e. CompassDirection.North.ordinal() = 0;
-        double angle = index*Math.PI/6;
+        double angle = index*Math.PI/8; // 16 main compass direction, therefore, each direction = 2*pi/16 = pi/8 rad
 
+
+        // The following block of code uses simple geometry to calculate lengths of a right angle triangle given an
+        // angle and hypotenuse length (= 0.00015 deg as specified in the doc).
+        // The reason there's if statement for every pi/2 angle is because signs differ depending on which quadrant
+        // we are dealing with.
         if (angle <= Math.PI/2) {
             double angleForCalc = Math.PI/2 - angle;
             newLng = this.lng + Math.cos(angleForCalc)*0.00015;

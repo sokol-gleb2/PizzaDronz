@@ -90,7 +90,10 @@ public class Database {
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
+            // turns data into JsonArray:
             JsonArray readerG = new JsonParser().parse(br.readLine()).getAsJsonArray();
+
+            // Goes through JsonArray and gets the lng and lat of each point
             for (int i = 0; i < readerG.size(); i++) {
                 JsonObject coor = (JsonObject) readerG.get(i);
                 LngLat centralPoint = new LngLat(coor.get("longitude").getAsDouble(), coor.get("latitude").getAsDouble());

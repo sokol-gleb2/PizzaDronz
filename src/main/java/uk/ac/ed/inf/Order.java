@@ -35,6 +35,8 @@ public class Order {
             }
         }
 
+        // adding 1000p for delivery
+        cost += 1;
         return cost;
     }
 

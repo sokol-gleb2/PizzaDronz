@@ -21,7 +21,7 @@ public class App
         Restaurant[] restaurants = Restaurant.getRestaurantsFromRestServer(url);
         for (Restaurant restaurant : restaurants) {
             System.out.println(restaurant.name);
-            List<Menu> menus = restaurant.getMenu();
+            Menu[] menus = restaurant.getMenu();
             for (Menu menu: menus) {
                 System.out.println(Arrays.toString(menu.getMenu()));
             }

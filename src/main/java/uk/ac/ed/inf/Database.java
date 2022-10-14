@@ -1,3 +1,10 @@
+/**
+ * The following is a Singleton class made to connect to the RESTful API and retrieve data from there.
+ *
+ * It is a simple version - no muti-thread handling - as that reduces the performance because of the cost
+ * associated with the synchronized method.
+ */
+
 package uk.ac.ed.inf;
 
 import com.google.gson.Gson;
@@ -14,18 +21,29 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThreadSafeSingleton {
-    private static ThreadSafeSingleton instance;
+public class Database {
+    private static Database instance;
 
-    ThreadSafeSingleton(){}
+    Database(){}
 
-    public static synchronized ThreadSafeSingleton getInstance(){
+    public static Database getInstance(){
         if(instance == null){
-            instance = new ThreadSafeSingleton();
+            instance = new Database();
         }
         return instance;
     }
 
+    /**
+     *
+     * This method gets the restaurant and menu data from the REST API.
+     * It uses the standard libraries HttpURLConnection and BufferedReader to communicate with
+     * the server.
+     * Outside library is Gson - JSON parser created by Google.
+     * A useful feature in Gson is deserialisation of JSON into Objects - as we can see being done by .fromJSON()
+     *
+     * @param url that returns JSON of Restaurant names, locations, and their menus
+     * @return array of Restaurants stores on the server
+     */
     public static Restaurant[] getResAndMenu(URL url) {
         try {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -47,18 +65,20 @@ public class ThreadSafeSingleton {
         }
     }
 
-    public List<LngLat> coordinates(String[] args) {
+    /**
+     *
+     * This method get the coordinates of Central Area from REST API.
+     * It uses the same libraries as mentioned before.
+     *
+     * @param url that returns JSON of Central Area coordinates
+     * @return ArrayList of LngLat objects corresponding to each point of the polygon that makes Central Area
+     */
+    public List<LngLat> coordinates(URL url) {
         List<LngLat> centralCoor = new ArrayList<>();
 
 
         try {
-            String baseURL = args[0];
-            String echoBasis = args [1];
-            if (! baseURL.endsWith("/")){
-                baseURL += "/";
-            }
 
-            URL url = new URL(baseURL + echoBasis);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");

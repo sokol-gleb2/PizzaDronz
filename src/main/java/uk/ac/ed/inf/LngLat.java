@@ -66,13 +66,12 @@ public record LngLat(double lng, double lat) {
         List<LngLat> line2 = new ArrayList<>();
         for (int i = 0; i < centralCoor.size(); i++) {
             line2.add(centralCoor.get(i));
-            line2.add(centralCoor.get((i+1)%centralCoor.size()));
+            line2.add(centralCoor.get((i+1)%centralCoor.size())); //this was added to also include the line that connect last and first point of centralCoor list
             if (this.intersect(line1, line2)) {
                 lineIntersect ++;
             }
-            line2.clear();
+            line2.clear(); //clearing so we can use it again from blank
         }
-//        System.out.println("Line intersect" + lineIntersect);
         return lineIntersect % 2 != 0;
     }
 
@@ -116,9 +115,9 @@ public record LngLat(double lng, double lat) {
         if (line1.get(0).lng * gradient2 + intersect2 == line1.get(0).lat) {
             return true;
         }
-        if (line1.get(0).lng < line2.get(0).lng || line1.get(0).lng < line2.get(1).lng) {
+        if (line1.get(0).lng < line2.get(0).lng || line1.get(0).lng < line2.get(1).lng) { //checking lng is in the right range
             return (line1.get(0).lat < line2.get(0).lat && line1.get(0).lat > line2.get(1).lat) ||
-                    (line1.get(0).lat > line2.get(0).lat && line1.get(0).lat < line2.get(1).lat);
+                    (line1.get(0).lat > line2.get(0).lat && line1.get(0).lat < line2.get(1).lat); //checking lat is in the right range and returning the truth value
         }
 
         return false;
@@ -159,7 +158,7 @@ public record LngLat(double lng, double lat) {
      * @return LngLat object with the updated coordinates - depending on the move chosen
      */
     public LngLat nextPosition(CompassDirection compassDirection) {
-        if (compassDirection == CompassDirection.Hover) {return new LngLat(this.lng, this.lat);}
+        if (compassDirection == CompassDirection.Hover) {return new LngLat(this.lng, this.lat);} // hovering = no change
         double newLng;
         double newLat;
         int index = compassDirection.ordinal(); // gets the index of the selected enum from all the enums i.e. CompassDirection.North.ordinal() = 0;

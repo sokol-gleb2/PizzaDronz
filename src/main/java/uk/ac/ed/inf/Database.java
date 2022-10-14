@@ -50,18 +50,18 @@ public class Database {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
-            if (conn.getResponseCode() != 200) {
+            if (conn.getResponseCode() != 200) { //can't connect
                 throw new RuntimeException("Failed : HTTP error code : "
                         + conn.getResponseCode());
             }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String jsonS = br.readLine();
-            return new Gson().fromJson(jsonS, Restaurant[].class);
+            return new Gson().fromJson(jsonS, Restaurant[].class); //deserialisation
 
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //can't connect
         }
     }
 
@@ -83,7 +83,7 @@ public class Database {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
-            if (conn.getResponseCode() != 200) {
+            if (conn.getResponseCode() != 200) { //can't connect
                 throw new RuntimeException("Failed : HTTP error code : "
                         + conn.getResponseCode());
             }
@@ -103,9 +103,9 @@ public class Database {
 
             conn.disconnect();
 
-        }catch (MalformedURLException e) {
+        }catch (MalformedURLException e) { //invalid URL
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (IOException e) { //can't connect
             throw new RuntimeException(e);
         }
 

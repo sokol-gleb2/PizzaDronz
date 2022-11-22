@@ -7,10 +7,7 @@
 
 package uk.ac.ed.inf;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,15 +15,18 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Database {
     private static Database instance;
 
     Database(){}
-
-    public static Database getInstance(){
+    // syncronized so only one thread is allowed
+    public static synchronized Database getInstance(){
         if(instance == null){
             instance = new Database();
         }
@@ -111,5 +111,92 @@ public class Database {
 
         return centralCoor;
     }
+
+
+    public List<Order> getOrders(URL url, Date dateGiven) {
+        try {
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+
+            if (conn.getResponseCode() != 200) { //can't connect
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + conn.getResponseCode());
+            }
+
+            List<Order> orders = new ArrayList<>();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String jsonS = br.readLine();
+            JsonArray readerG = JsonParser.parseString(jsonS).getAsJsonArray();
+
+            for (int i = 0; i < readerG.size(); i++) {
+                JsonObject object = (JsonObject) readerG.get(i);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = dateFormat.parse(object.get("orderDate").getAsString());
+                if (date.equals(dateGiven)) {
+                    orders.add(new Gson().fromJson(object, Order.class));
+                }
+            }
+
+            return orders;
+
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e); //can't connect
+        } catch (ParseException e) {
+            throw new RuntimeException(e); // date exception
+        }
+    }
+
+    public List<NoFlyZone> getNoFlyZones(URL url) {
+
+        List<NoFlyZone> noFlyZones = new ArrayList<>();
+
+
+        try {
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+
+            if (conn.getResponseCode() != 200) { //can't connect
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + conn.getResponseCode());
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            // turns data into JsonArray:
+            String jsonS = br.readLine();
+            JsonArray readerG = JsonParser.parseString(jsonS).getAsJsonArray();
+            for (int i = 0; i < readerG.size(); i++) {
+                List<LngLat> tempCoor = new ArrayList<>();
+                JsonObject object = (JsonObject) readerG.get(i);
+                var zoneCoordinates = object.get("coordinates");
+                for (var point : zoneCoordinates.getAsJsonArray()) {
+                    LngLat c = new LngLat(point.getAsJsonArray().get(0).getAsDouble(), point.getAsJsonArray().get(1).getAsDouble());
+                    tempCoor.add(c);
+                }
+                var name = object.get("name").getAsString();
+                var noFlyZone = new NoFlyZone(name, tempCoor);
+                noFlyZones.add(noFlyZone);
+//                tempCoor.clear();
+
+            }
+
+
+            conn.disconnect();
+
+        }catch (MalformedURLException e) { //invalid URL
+            e.printStackTrace();
+        } catch (IOException e) { //can't connect
+            throw new RuntimeException(e);
+        }
+
+        return noFlyZones;
+    }
+
 
 }

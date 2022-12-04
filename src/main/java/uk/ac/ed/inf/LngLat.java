@@ -8,6 +8,7 @@
 
 package uk.ac.ed.inf;
 
+import java.awt.geom.Line2D;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -110,17 +111,20 @@ public record LngLat(double lng, double lat) {
      */
     private boolean intersect(List<LngLat> line1, List<LngLat> line2) {
         //check if the point in ON the line:
-        double gradient2 = (line2.get(1).lat - line2.get(0).lat)/(line2.get(1).lng - line2.get(0).lng);
-        double intersect2 = line2.get(0).lat - (line2.get(0).lng * gradient2);
-        if (line1.get(0).lng * gradient2 + intersect2 == line1.get(0).lat) {
-            return true;
-        }
-        if (line1.get(0).lng < line2.get(0).lng || line1.get(0).lng < line2.get(1).lng) { //checking lng is in the right range
-            return (line1.get(0).lat < line2.get(0).lat && line1.get(0).lat > line2.get(1).lat) ||
-                    (line1.get(0).lat > line2.get(0).lat && line1.get(0).lat < line2.get(1).lat); //checking lat is in the right range and returning the truth value
-        }
+//        double gradient2 = (line2.get(1).lat - line2.get(0).lat)/(line2.get(1).lng - line2.get(0).lng);
+//        double intersect2 = line2.get(0).lat - (line2.get(0).lng * gradient2);
+//        if (line1.get(0).lng * gradient2 + intersect2 == line1.get(0).lat) {
+//            return true;
+//        }
+//        if (line1.get(0).lng < line2.get(0).lng || line1.get(0).lng < line2.get(1).lng) { //checking lng is in the right range
+//            return (line1.get(0).lat < line2.get(0).lat && line1.get(0).lat > line2.get(1).lat) ||
+//                    (line1.get(0).lat > line2.get(0).lat && line1.get(0).lat < line2.get(1).lat); //checking lat is in the right range and returning the truth value
+//        }
 
-        return false;
+        Line2D l1 = new Line2D.Double(line1.get(0).lng, line1.get(0).lat, line1.get(1).lng, line1.get(1).lat);
+        Line2D l2 = new Line2D.Double(line2.get(0).lng, line2.get(0).lat, line2.get(1).lng, line2.get(1).lat);
+        return l1.intersectsLine(l2);
+
     }
 
 

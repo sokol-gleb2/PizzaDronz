@@ -1,3 +1,8 @@
+/**
+ * Class responsible for giving structure to the Restaurants pulled from the server.
+ * Each Restaurant is made up of name, location (longitude, latitude) and list of pizzas of offer (Menu[])
+ */
+
 package uk.ac.ed.inf;
 
 import java.net.URL;
@@ -17,7 +22,7 @@ public class Restaurant {
 
 
     public Menu[] getMenu() {
-        return menu;
+        return this.menu;
     }
 
     static Restaurant[] getRestaurantsFromRestServer(URL serverBaseAddress) {

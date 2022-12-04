@@ -1,3 +1,9 @@
+/**
+ * Class responsible for giving structure to the Menus pulled from the server.
+ * Each Menu is made up of name of pizza and how much it costs.
+ * Mainly used as a list (Menu[]) for the Restaurant class.
+ */
+
 package uk.ac.ed.inf;
 
 public class Menu {

@@ -17,9 +17,9 @@ public class Order {
     // "orderItems":["Meat Lover","Vegan Delight"]}
 
     public OrderOutcome orderOutcome;
-    private String orderNo;
+    public String orderNo;
     public String orderDate;
-    private String customer;
+    public String customer;
     public String creditCardNumber;
     private String creditCardExpiry;
     private String cvv;
